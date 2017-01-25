@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+        <div class='container'>
+            <div class='row'>
+                <div class='col-xs-3'>
+                    <div class='panel panel-default'>
+                        <div class='panel-heading'>
+                            Welcome to ShortUrls
+                        </div>
+                        <div class='panel-body'>
+                            <form method='post' action=''>
+                                {% csrf_token %}
+                                {{ form.url }}
+                                <input type='button' class='btn btn-primary'>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
