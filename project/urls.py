@@ -23,4 +23,5 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('shorturls.urls', namespace='shorturls')),
+    url(r'^auth/', include('authentication.urls', namespace='authentication')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
