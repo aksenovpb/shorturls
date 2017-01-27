@@ -1,5 +1,6 @@
 from django.test import TestCase
 from authentication.forms import SignupForm
+from authentication.forms import LoginForm
 from authentication.models import Account
 
 
@@ -61,10 +62,24 @@ class AuthenticationFormsTestCase(TestCase):
         })
 
     def test_authentication_forms__loginform__blank(self):
-        self.fail()
+        form = LoginForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {
+            'username': ['This field is required.'],
+            'password': ['This field is required.']
+        })
 
     def test_authentication_forms__loginform__valid(self):
-        self.fail()
+        post = {'username': 'user@user.loc', 'password': 'userpassword'}
+        form = LoginForm(data=post)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(self.user, form.get_user())
 
-    def test_authentication_forms__loginform__notvalid(self):
-        self.fail()
+    def test_authentication_forms__loginform__not_valid(self):
+        post={'username': 'user@notexists.loc', 'password': 'userpassword'}
+        form = LoginForm(data=post)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {
+            '__all__': [u'Please enter a correct email and password. Note that both fields may be case-sensitive.']
+        })
+        self.assertEqual(form.get_user(), None)
