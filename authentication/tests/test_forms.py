@@ -1,6 +1,6 @@
 from django.test import TestCase
-from authentication.forms import SignupForm
-from authentication.forms import LoginForm
+from authentication.forms import RegistrationForm as SignupForm
+from authentication.forms import AuthenticationForm as LoginForm
 from authentication.models import Account
 
 
