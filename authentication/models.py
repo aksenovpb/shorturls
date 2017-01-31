@@ -6,23 +6,23 @@ from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 class AccountManager(BaseUserManager):
-    def create_user(self, email, password=None, **kwargs):
+    def create_user(self, username, email, password=None, **kwargs):
         if not email:
             raise ValueError('Users must have a valid email address')
 
-        if not kwargs.get('username'):
+        if not username:
             raise ValueError('Users must have a valid username')
 
         account = self.model(email=self.normalize_email(email),
-                username=kwargs.get('username')) 
+                             username=username)
 
         account.set_password(password)
-        user.save(using=self._db)
+        account.save(using=self._db)
 
         return account
 
-    def create_superuser(self, email, password, **kwargs):
-        account = self.create_user(email, password, **kwargs)
+    def create_superuser(self, username, email, password, **kwargs):
+        account = self.create_user(username, email, password, **kwargs)
 
         account.is_superuser = True
         account.save()

@@ -32,9 +32,9 @@ REDIRECT_BEFORE_REG = getattr(settings, 'AUTHENTICATION_REDIRECT_BEFORE_REG', '/
 
 def signup(request,
            template_name='authentication/registration.html',
-           template_mail_subject='authentication/registration_subject.txt',
-           template_mail_user_is_activate='authentication/registration_user_is_active.html',
-           template_mail_user_not_is_activate='authentication/registration_user_not_is_active.html',
+           template_mail_subject='authentication/mails/registration_subject.txt',
+           template_mail_user_is_activate='authentication/mails/registration_user_is_active.html',
+           template_mail_user_not_is_activate='authentication/mails/registration_user_not_is_active.html',
            registration_form=RegistrationForm,
            redirect_field_name=REDIRECT_FIELD_NAME,
            extra_context=None):
@@ -44,7 +44,7 @@ def signup(request,
 
     form = registration_form(request.POST or None)
 
-    if request.mathod == 'POST':
+    if request.method == 'POST':
         if form.is_valid():
             user = get_user_model().objects.create_user(
                 form.cleaned_data.get('username'),
@@ -100,16 +100,21 @@ def signup(request,
 
             return HttpResponseRedirect(redirect_to)
 
-        context = {
-            'login_url': resolve_url(settings.LOGIN_URL),
-            'title': 'Registration',
-            'form': form
-        }
-        
-        if extra_context is not None:
-            context.update(extra_context)
+        else:
+            status = 400
+    else:
+        status = 200
 
-        return TemplateResponse(request, template_name, context)
+    context = {
+        'login_url': resolve_url(settings.LOGIN_URL),
+        'title': 'Registration',
+        'form': form
+    }
+
+    if extra_context is not None:
+        context.update(extra_context)
+
+    return TemplateResponse(request, template_name, context, status=status)
 
 
 def login(request,
