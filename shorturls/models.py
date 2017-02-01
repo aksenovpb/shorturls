@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
 
 from authentication.models import Account
@@ -34,11 +33,11 @@ class Url(models.Model):
         return self.url
 
 
-# class Referer(models.Model):
-#     url = models.ForeignKey(Url)
-#     referer = models.CharField(max_length=220, validators=[validate_url], blank=True)
+class Referrer(models.Model):
+    url = models.ForeignKey(Url)
+    referrer = models.CharField(max_length=220, validators=[validate_url], blank=True)
 
 
-# class Logging(models.Model):
-#     referer = models.ForeignKey(Referer)
-#     go_at = models.DateTimeField(auto_now_add=True)
+class Logging(models.Model):
+    referrer = models.ForeignKey(Referrer)
+    go_at = models.DateTimeField(auto_now_add=True)

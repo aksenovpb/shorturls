@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from shorturls.views import index
-from shorturls.models import Url
+from shorturls.models import Url, Referrer, Logging
 
 
 class ShotrurlsViewsTestCase(TestCase):
@@ -54,3 +54,25 @@ class ShotrurlsViewsTestCase(TestCase):
         _url = reverse('shorturls:url_redirect', kwargs=kwargs)
         response = self.client.get(_url)
         self.assertEqual(response.status_code, 302)
+
+        referrer = 'http://referrer.ru'
+        response = self.client.get(_url, HTTP_REFERER=referrer)
+        self.assertEqual(response.status_code, 302)
+        referrers = Referrer.objects.filter(url=self.url)
+        self.assertEqual(referrers.count(), 1)
+        loggings = Logging.objects.filter(referrer=referrers.last())
+        self.assertEqual(loggings.count(), 1)
+
+        referrer = 'http://referrer1.ru'
+        response = self.client.get(_url, HTTP_REFERER=referrer)
+        self.assertEqual(response.status_code, 302)
+        referrers = Referrer.objects.filter(url=self.url)
+        self.assertEqual(referrers.count(), 2)
+        Logging.objects.filter(referrer=referrers.last())
+        self.assertEqual(loggings.count(), 1)
+
+    def test_shorturls_views__url_redirect_not_valid(self):
+        kwargs = {'shortcode': 'not_valid'}
+        _url = reverse('shorturls:url_redirect', kwargs=kwargs)
+        response = self.client.get(_url)
+        self.assertEqual(response.status_code, 404)

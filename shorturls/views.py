@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 
 from shorturls.forms import UrlForm
-from shorturls.models import Url
+from shorturls.models import Url, Referrer, Logging
 
 
 def index(request):
@@ -41,4 +41,10 @@ def index(request):
 
 def url_redirect(request, shortcode):
     url = get_object_or_404(Url, shortcode=shortcode)
+    if request.META.get('HTTP_REFERER'):
+        form = UrlForm({'url': request.META.get('HTTP_REFERER')})
+        if form.is_valid():
+            valid_referrer = form.cleaned_data.get('url')
+            referrer, create = Referrer.objects.get_or_create(url=url, referrer=valid_referrer)
+            Logging(referrer=referrer).save()
     return redirect(url.url)
