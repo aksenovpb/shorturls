@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from shorturls.views import index
@@ -8,6 +9,12 @@ class ShotrurlsViewsTestCase(TestCase):
     def setUp(self):
         self.url_str = 'ya.ru'
         self.url, created = Url.objects.get_or_create(url=self.url_str)
+        self.user_data = {
+            'username': 'user',
+            'email': 'email@email.loc',
+            'password': 'userPassword1',
+        }
+        self.user = get_user_model().objects.create_user(**self.user_data)
 
     def test_shorturls_views__index(self):
         response = self.client.get('/')
@@ -17,6 +24,18 @@ class ShotrurlsViewsTestCase(TestCase):
         data = {'url': 'http://yatest.ru'}
         response = self.client.post('/', data)
         self.assertEqual(response.status_code, 201)
+
+    def test_shorturls_views__index_url_valid_user_is_authenticate(self):
+        username_field = get_user_model().USERNAME_FIELD
+        user_data = {
+            'username': self.user_data.get(username_field),
+            'password': self.user_data.get('password')
+        }
+        self.client.login(**user_data)
+        data = {'url': 'http://myurl.loc'}
+        response = self.client.post('/', data)
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNotNone(Url.objects.last().account)
         
     def test_shorturls_views__index_url_valid_duplicate(self):
         data = {'url': self.url_str}

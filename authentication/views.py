@@ -130,8 +130,14 @@ def login(request,
         if form.is_valid():
             if not is_safe_url(url=redirect_to, host=request.get_host()):
                 redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
-                auth_login(request, form.get_user())
+                redirect_to = '/'
+            auth_login(request, form.get_user())
+
+            return HttpResponseRedirect(redirect_to)
+        else:
+            status = 400
     else:
+        status = 200
         form = authentication_form(request)
 
     current_site = get_current_site(request)
@@ -141,12 +147,13 @@ def login(request,
         redirect_field_name: redirect_to,
         'site': current_site,
         'site_name': current_site.name,
+        'title': 'Login',
     }
 
     if extra_context is not None:
         context.update(extra_context)
 
-    return TemplateResponse(request, template_name, context)
+    return TemplateResponse(request, template_name, context, status=status)
 
 
 def logout(request,

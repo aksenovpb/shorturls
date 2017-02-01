@@ -10,6 +10,7 @@
         <link href='{% static "bower_components/bootstrap/dist/css/bootstrap.min.css" %}' rel='stylesheet'>
     </head>
     <body>
+        user is {{ request.user }}
         {% block content %}
         {% endblock %}
     </body>

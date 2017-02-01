@@ -6,7 +6,7 @@ from django.template.response import TemplateResponse
 from shorturls.forms import UrlForm
 from shorturls.models import Url
 
-# Create your views here.
+
 def index(request):
     form = UrlForm(request.POST or None)
     context = {}
@@ -14,7 +14,8 @@ def index(request):
     if request.method == 'POST':
         if form.is_valid():
             url = form.cleaned_data.get('url')
-            obj, created = Url.objects.get_or_create(url=url)
+            account = request.user if request.user.is_authenticated() else None
+            obj, created = Url.objects.get_or_create(url=url, account=account)
             context.update({
                 'object': obj,
                 'created': created

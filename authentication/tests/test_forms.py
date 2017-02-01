@@ -76,7 +76,7 @@ class AuthenticationFormsTestCase(TestCase):
         self.assertEqual(self.user, form.get_user())
 
     def test_authentication_forms__loginform__not_valid(self):
-        post={'username': 'user@notexists.loc', 'password': 'userpassword'}
+        post = {'username': 'user@notexists.loc', 'password': 'userpassword'}
         form = LoginForm(data=post)
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors, {

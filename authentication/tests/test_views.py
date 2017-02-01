@@ -15,7 +15,7 @@ class AuthenticationViewTestCase(TestCase):
         response = self.client.get('/auth/signup/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.templates[0].name, 'authentication/registration.html')
-        self.assertEqual(response.context.get('title'), 'Registration')
+        self.assertEqual(response.context['title'], 'Registration')
 
     def test_authentication_views__signup__valid(self):
         post = {
@@ -53,13 +53,33 @@ class AuthenticationViewTestCase(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_authentication_views__login(self):
-        self.fail()
+        response = self.client.get('/auth/login/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'authentication/login.html')
+        self.assertEqual(response.context['title'], 'Login')
 
     def test_authentication_views__login__valid(self):
-        self.fail()
+        username_field = get_user_model().USERNAME_FIELD
+        post = {
+            'username': self.user_data.get(username_field),
+            'password': self.user_data.get('password')
+        }
+        response = self.client.post('/auth/login/', post)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/')
+        self.assertTrue(self.client.login(**post))
 
     def test_authentication_views__login__not_valid(self):
-        self.fail()
+        post = {
+            'username': 'username'*10,
+            'password': 'not valid'
+        }
+        response = self.client.post('/auth/login/', post)
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(self.client.login(**post))
 
     def test_authentication_views__logout(self):
-        self.fail()
+        response = self.client.get('/auth/logout/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'authentication/logout.html')
+        self.assertEqual(response.context['title'], 'Logged out')
