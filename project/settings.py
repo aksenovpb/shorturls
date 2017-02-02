@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'project',
     'shorturls',
     'authentication',
+    'accounts',
 ]
 
 MIDDLEWARE = [

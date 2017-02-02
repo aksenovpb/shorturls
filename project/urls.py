@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('shorturls.urls', namespace='shorturls')),
     url(r'^auth/', include('authentication.urls', namespace='authentication')),
+    url(r'^accounts/', include('accounts.urls', namespace='accounts')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
