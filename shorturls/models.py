@@ -33,6 +33,9 @@ class Url(models.Model):
     def __str__(self):
         return self.url
 
+    def set_owner(self, account):
+        self.account = account
+
 
 class Referrer(models.Model):
     url = models.ForeignKey(Url)

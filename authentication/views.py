@@ -323,8 +323,11 @@ def password_change(request,
             # is enabled.
             update_session_auth_hash(request, form.user)
             return HttpResponseRedirect(post_change_redirect)
+        else:
+            status = 400
     else:
         form = password_change_form(user=request.user)
+        status = 200
     context = {
         'form': form,
         'title': _('Password change'),
@@ -332,7 +335,7 @@ def password_change(request,
     if extra_context is not None:
         context.update(extra_context)
 
-    return TemplateResponse(request, template_name, context)
+    return TemplateResponse(request, template_name, context, status=status)
 
 
 @login_required

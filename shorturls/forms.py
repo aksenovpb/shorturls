@@ -20,3 +20,14 @@ class UrlFullForm(forms.ModelForm, UrlForm):
     def __init__(self, *args, **kwargs):
         super(UrlFullForm, self).__init__(*args, **kwargs)
         self.fields['description'].required = False
+
+
+class UrlChangeForm(forms.ModelForm):
+
+    class Meta:
+        model = Url
+        fields = 'description', 'active'
+
+    def __init__(self, *args, **kwargs):
+        super(UrlChangeForm, self).__init__(*args, **kwargs)
+        self.fields['description'].required = False
