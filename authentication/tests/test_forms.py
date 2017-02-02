@@ -1,16 +1,21 @@
 from django.test import TestCase
-from authentication.forms import RegistrationForm as SignupForm
+from authentication.forms import RegistrationForm as SignupForm, PasswordResetForm, PasswordChangeForm, SetPasswordForm
 from authentication.forms import AuthenticationForm as LoginForm
 from authentication.models import Account
 
 
 class AuthenticationFormsTestCase(TestCase):
     def setUp(self):
-        self.user, created = Account.objects.get_or_create(**{
+        self.user_data = {
             'username': 'user',
-            'email': 'user@user.loc'
+            'email': 'user@user.loc',
+            'password': 'userpassword'
+        }
+        self.user, created = Account.objects.get_or_create(**{
+            'username': self.user_data.get('username'),
+            'email': self.user_data.get('email')
         })
-        self.user.set_password('userpassword')
+        self.user.set_password(self.user_data.get('password'))
         self.user.save()
 
     def test_authentication_forms__signupform__blank(self):
@@ -83,3 +88,59 @@ class AuthenticationFormsTestCase(TestCase):
             '__all__': [u'Please enter a correct email and password. Note that both fields may be case-sensitive.']
         })
         self.assertEqual(form.get_user(), None)
+
+    def test_authentication_forms__setpasswordform__valid(self):
+        post = {
+            'new_password1': 'newvalidpassword',
+            'new_password2': 'newvalidpassword'
+        }
+        form = SetPasswordForm(user=self.user, data=post)
+        self.assertTrue(form.is_valid())
+        user = form.save()
+        self.assertTrue(user.check_password(post.get('new_password1')))
+
+    def test_authentication_forms__setpasswordform__not_valid(self):
+        post = {
+            'new_password1': 'newvalidpassword1',
+            'new_password2': 'newvalidpassword2'
+        }
+        form = SetPasswordForm(user=self.user, data=post)
+        self.assertFalse(form.is_valid())
+
+    def test_authentication_forms__passwordresetform__valid(self):
+        post = {'email': 'valid@valid.loc'}
+        form = PasswordResetForm(post)
+        self.assertTrue(form.is_valid())
+
+    def test_authentication_forms__passwordresetform__not_valid(self):
+        post = {'email': 'not valid.loc'}
+        form = PasswordResetForm(post)
+        self.assertFalse(form.is_valid())
+
+    def test_authentication_forms__passwordchangeform__valid(self):
+        post = {
+            'old_password': self.user_data.get('password'),
+            'new_password1': 'newvalidpassword',
+            'new_password2': 'newvalidpassword'
+        }
+        form = PasswordChangeForm(user=self.user, data=post)
+        self.assertTrue(form.is_valid())
+        user = form.save()
+        self.assertTrue(user.check_password(post.get('new_password1')))
+
+    def test_authentication_forms__passwordchangeform__not_valid(self):
+        post = {
+            'old_password': 'notvalid',
+            'new_password1': 'newvalidpassword',
+            'new_password2': 'newvalidpassword'
+        }
+        form = PasswordChangeForm(user=self.user, data=post)
+        self.assertFalse(form.is_valid())
+
+        post = {
+            'old_password': self.user_data.get('password'),
+            'new_password1': 'newvalidpassword1',
+            'new_password2': 'newvalidpassword2'
+        }
+        form = PasswordChangeForm(user=self.user, data=post)
+        self.assertFalse(form.is_valid())
