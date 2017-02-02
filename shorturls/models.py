@@ -13,6 +13,7 @@ SHORTCODE_MAX = getattr(settings, 'SHORTCODE_MAX', 15)
 
 class Url(models.Model):
     url = models.CharField(max_length=220, validators=[validate_url])
+    description = models.TextField(null=True)
     shortcode = models.CharField(max_length=SHORTCODE_MAX, unique=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
