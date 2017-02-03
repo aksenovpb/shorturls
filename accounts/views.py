@@ -15,6 +15,7 @@ def profile(request, template_name='accounts/profile.html'):
     return TemplateResponse(request, template_name, context)
 
 
+@login_required
 def change_password(request, template_name='accounts/change_password.html'):
     from authentication.views import password_change
     return password_change(
@@ -25,6 +26,7 @@ def change_password(request, template_name='accounts/change_password.html'):
     )
 
 
+@login_required
 def change_password_done(request, template_name='accounts/change_password_done.html'):
     from authentication.views import password_change_done
     return password_change_done(
@@ -34,6 +36,7 @@ def change_password_done(request, template_name='accounts/change_password_done.h
     )
 
 
+@login_required
 def urls(request, template_name='accounts/urls.html'):
     qs = Url.objects.filter(account=request.user)
     urls_list = qs.values('id', 'url', 'shortcode', 'description', 'active')
@@ -41,6 +44,7 @@ def urls(request, template_name='accounts/urls.html'):
     return TemplateResponse(request, template_name, context)
 
 
+@login_required
 def urls_add(request, template_name='accounts/urls_add.html'):
     form = UrlFullForm(request.POST or None)
     if request.method == 'POST':
@@ -59,6 +63,7 @@ def urls_add(request, template_name='accounts/urls_add.html'):
     return TemplateResponse(request, template_name, context, status=status)
 
 
+@login_required
 def urls_detail(request, object_id, template_name='accounts/urls_detail.html'):
     instance = get_object_or_404(Url, pk=object_id, account=request.user)
     context = {
@@ -67,6 +72,7 @@ def urls_detail(request, object_id, template_name='accounts/urls_detail.html'):
     return TemplateResponse(request, template_name, context)
 
 
+@login_required
 def urls_change(request, object_id, template_name='accounts/urls_change.html'):
     instance = get_object_or_404(Url, pk=object_id, account=request.user)
     form = UrlChangeForm(request.POST or None, instance=instance)

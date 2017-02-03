@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, REDIRECT_FIELD_NAME
 from django.test import TestCase
 
 from shorturls.models import Url
@@ -107,3 +107,19 @@ class AccountsViewsTestCase(TestCase):
         post = {}
         response = self.client.post('/accounts/urls/%s/change/' % self.url.id, post)
         self.assertEqual(response.status_code, 400)
+
+
+class AccountsViewsAnonymousUserTestCase(TestCase):
+    def redirect_anonymous_user(self, path):
+        response = self.client.get(path)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/auth/login/?%s=%s' % (REDIRECT_FIELD_NAME, path))
+
+    def test_accounts_views__anonymous_user(self):
+        self.redirect_anonymous_user('/accounts/profile/')
+        self.redirect_anonymous_user('/accounts/change_password/')
+        self.redirect_anonymous_user('/accounts/change_password/done/')
+        self.redirect_anonymous_user('/accounts/urls/')
+        self.redirect_anonymous_user('/accounts/urls/add/')
+        self.redirect_anonymous_user('/accounts/urls/1/detail/')
+        self.redirect_anonymous_user('/accounts/urls/1/change/')
