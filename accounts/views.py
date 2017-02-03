@@ -11,7 +11,7 @@ from shorturls.models import Url
 
 @login_required
 def profile(request, template_name='accounts/profile.html'):
-    context = None
+    context = {'title': 'Profile'}
     return TemplateResponse(request, template_name, context)
 
 
@@ -22,7 +22,7 @@ def change_password(request, template_name='accounts/change_password.html'):
         request,
         template_name=template_name,
         post_change_redirect=reverse('accounts:change_password_done'),
-        extra_context=None
+        extra_context={'title': 'Password change'}
     )
 
 
@@ -32,7 +32,7 @@ def change_password_done(request, template_name='accounts/change_password_done.h
     return password_change_done(
         request,
         template_name=template_name,
-        extra_context=None
+        extra_context={'title': 'Password change successful'}
     )
 
 
@@ -40,7 +40,10 @@ def change_password_done(request, template_name='accounts/change_password_done.h
 def urls(request, template_name='accounts/urls.html'):
     qs = Url.objects.filter(account=request.user)
     urls_list = qs.values('id', 'url', 'shortcode', 'description', 'active')
-    context = {'urls_list': urls_list}
+    context = {
+        'urls_list': urls_list,
+        'title': 'Urls'
+    }
     return TemplateResponse(request, template_name, context)
 
 
@@ -58,7 +61,8 @@ def urls_add(request, template_name='accounts/urls_add.html'):
     else:
         status = 200
     context = {
-        'form': form
+        'form': form,
+        'title': 'Url add'
     }
     return TemplateResponse(request, template_name, context, status=status)
 
@@ -67,7 +71,8 @@ def urls_add(request, template_name='accounts/urls_add.html'):
 def urls_detail(request, object_id, template_name='accounts/urls_detail.html'):
     instance = get_object_or_404(Url, pk=object_id, account=request.user)
     context = {
-        'instance': instance
+        'instance': instance,
+        'title': 'Detail %s' % instance.url
     }
     return TemplateResponse(request, template_name, context)
 
@@ -85,6 +90,7 @@ def urls_change(request, object_id, template_name='accounts/urls_change.html'):
     else:
         status = 200
     context = {
-        'form': form
+        'form': form,
+        'title': 'Change %s' % instance.url
     }
     return TemplateResponse(request, template_name, context, status=status)

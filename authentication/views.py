@@ -189,9 +189,9 @@ def logout(request,
 
 
 def password_reset(request,
-                   template_name='registration/password_reset_form.html',
-                   template_mail_password_reset='registration/password_reset_email.html',
-                   template_mail_subject='registration/password_reset_subject.txt',
+                   template_name='authenticate/password_reset_form.html',
+                   template_mail_password_reset='authenticate/password_reset_email.html',
+                   template_mail_subject='authenticate/password_reset_subject.txt',
                    password_reset_form=PasswordResetForm,
                    token_generator=default_token_generator,
                    post_reset_redirect=None,
@@ -232,7 +232,7 @@ def password_reset(request,
 
 
 def password_reset_done(request,
-                        template_name='registration/password_reset_done.html',
+                        template_name='authenticate/password_reset_done.html',
                         extra_context=None):
     context = {
         'title': _('Password reset sent'),
@@ -245,7 +245,7 @@ def password_reset_done(request,
 
 # @never_cache
 def password_reset_confirm(request, uidb64=None, token=None,
-                           template_name='registration/password_reset_confirm.html',
+                           template_name='authenticate/password_reset_confirm.html',
                            token_generator=default_token_generator,
                            set_password_form=SetPasswordForm,
                            post_reset_redirect=None,
@@ -290,7 +290,7 @@ def password_reset_confirm(request, uidb64=None, token=None,
 
 
 def password_reset_complete(request,
-                            template_name='registration/password_reset_complete.html',
+                            template_name='authenticate/password_reset_complete.html',
                             extra_context=None):
     context = {
         'login_url': resolve_url(settings.LOGIN_URL),
@@ -305,7 +305,7 @@ def password_reset_complete(request,
 @csrf_protect
 @login_required
 def password_change(request,
-                    template_name='registration/password_change_form.html',
+                    template_name='authenticate/password_change_form.html',
                     post_change_redirect=None,
                     password_change_form=PasswordChangeForm,
                     extra_context=None):
@@ -340,7 +340,7 @@ def password_change(request,
 
 @login_required
 def password_change_done(request,
-                         template_name='registration/password_change_done.html',
+                         template_name='authenticate/password_change_done.html',
                          extra_context=None):
     context = {
         'title': _('Password change successful'),

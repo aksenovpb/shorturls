@@ -1,0 +1,45 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+                <img alt="Brand" width="20px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAB+0lEQVR4AcyYg5LkUBhG+1X2PdZGaW3btm3btm3bHttWrPomd1r/2Jn/VJ02TpxcH4CQ/dsuazWgzbIdrm9dZVd4pBz4zx2igTaFHrhvjneVXNHCSqIlFEjiwMyyyOBilRgGSqLNF1jnwNQdIvAt48C3IlBmHCiLQHC2zoHDu6zG1iXn6+y62ScxY9AODO6w0pvAqf23oSE4joOfH6OxfMoRnoGUm+de8wykbFt6wZtA07QwtNOqKh3ZbS3Wzz2F+1c/QJY0UCJ/J3kXWJfv7VhxCRRV1jGw7XI+gcO7rEFFRvdYxydwcPsVsC0bQdKScngt4iUTD4Fy/8p7PoHzRu1DclwmgmiqgUXjD3oTKHbAt869qdJ7l98jNTEblPTkXMwetpvnftA0LLHb4X8kiY9Kx6Q+W7wJtG0HR7fdrtYz+x7iya0vkEtUULIzCjC21wY+W/GYXusRH5kGytWTLxgEEhePPwhKYb7EK3BQuxWwTBuUkd3X8goUn6fMHLyTT+DCsQdAEXNzSMeVPAJHdF2DmH8poCREp3uwm7HsGq9J9q69iuunX6EgrwQVObjpBt8z6rdPfvE8kiiyhsvHnomrQx6BxYUyYiNS8f75H1w4/ISepDZLoDhNJ9cdNUquhRsv+6EP9oNH7Iff2A9g8h8CLt1gH0Qf9NMQAFnO60BJFQe0AAAAAElFTkSuQmCC">
+            </a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            {% if request.user.is_authenticated %}
+            <ul class="nav navbar-nav">
+                {% url 'accounts:urls' as urls_url %}
+                <li class="{% if urls_url == request.path %}active{% endif %}"><a href="{{ urls_url }}">My urls</a></li>
+            </ul>
+            {% endif %}
+            <ul class="nav navbar-nav navbar-right">
+                {% if not request.user.is_authenticated %}
+                    {% url 'authentication:login' as login_url %}
+                    {% url 'authentication:signup' as signup_url %}
+                <li class="{% if login_url == request.path %}active{% endif %}"><a href="{{ login_url }}">Login</a></li>
+                <li class="{% if signup_url == request.path %}active{% endif %}"><a href="{{ signup_url }}">Registration</a></li>
+                {% else %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                       aria-expanded="false">{{ request.user.username }} <span class="glyphicon glyphicon-user"></span><span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        {% url 'accounts:profile' as profile_url %}
+                        <li class="{% if profile_url == request.path %}active{% endif %}"><a href="{{ profile_url }}">Profile</a></li>
+                        {% url 'accounts:change_password' as change_password_url %}
+                        <li class="{% if change_password_url == request.path %}active{% endif %}"><a href="{{ change_password_url }}">Change password</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="{% url 'authentication:logout' %}">Logout</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

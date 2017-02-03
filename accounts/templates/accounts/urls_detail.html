@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+        <div class='container'>
+            <div class='row'>
+                <div class='col-xs-12'>
+                    <div class='panel panel-default'>
+                        <div class='panel-heading'>
+                            {{ title }}
+                        </div>
+                        <div class='panel-body'>
+                            <p>{{ instance.url }}</p>
+                            <p>{{ instance.shortcode }}</p>
+                            <p>{{ instance.description }}</p>
+                            <p>{{ instance.active }}</p>
+                        </div>
+                        <div class='panel-footer'>
+                            <p><a href="{% url 'accounts:urls_change' instance.id %}" class="btn btn-primary">Edit</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class='container'>
+        <div class='row'>
+            <div class='col-xs-12'>
+                <div class="panel panel-default">
+                    <div class="panel-heading">{{ title }}</div>
+                    <div class="panel-body">
+                        <a href="{% url 'accounts:urls_add' %}" class="btn btn-primary">Add url</a>
+                    </div>
+                    <div class="list-group">
+                        {% for url in urls_list %}
+                            <a href="{% url 'accounts:urls_detail' url.id %}" class="list-group-item">
+                                <p class="list-group-item-heading">{{ url.shortcode }} / {{ url.url }}</p>
+                                {% if url.description %}
+                                <p class="list-group-item-text">{{ url.description }}</p>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
