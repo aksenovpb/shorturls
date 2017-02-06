@@ -96,6 +96,33 @@ class AuthenticationForm(forms.Form):
 class PasswordResetForm(forms.Form):
     email = forms.EmailField(label=_("Email"), max_length=254)
 
+    error_messages = {
+        'invalid_email': 'Please enter a correct email. '
+                         'Note that both fields may be case-sensitive.'
+    }
+
+    def __init__(self, *args, ** kwargs):
+        self.user_cache = None
+        super(PasswordResetForm, self).__init__(*args, **kwargs)
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        self.user_cache = get_user_model().objects.filter(email=email).first()
+        if not self.user_cache:
+            raise forms.ValidationError(
+                self.error_messages['invalid_email'],
+                code='invalid_email'
+            )
+
+        return email
+
+    def get_user_id(self):
+        return self.user_cache.id if self.user_cache else None
+
+    def get_user(self):
+        return self.user_cache
+
+
     # def send_mail(self, subject_template_name, email_template_name,
     #               context, from_email, to_email, html_email_template_name=None):
     #     """

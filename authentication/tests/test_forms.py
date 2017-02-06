@@ -108,9 +108,14 @@ class AuthenticationFormsTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_authentication_forms__passwordresetform__valid(self):
-        post = {'email': 'valid@valid.loc'}
+        post = {'email': self.user.email}
         form = PasswordResetForm(post)
         self.assertTrue(form.is_valid())
+
+    def test_authentication_forms__passwordresetform__not_exists(self):
+        post = {'email': 'valid@valid.loc'}
+        form = PasswordResetForm(post)
+        self.assertFalse(form.is_valid())
 
     def test_authentication_forms__passwordresetform__not_valid(self):
         post = {'email': 'not valid.loc'}

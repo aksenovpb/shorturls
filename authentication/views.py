@@ -202,37 +202,40 @@ def activate(request, uidb64=None, token=None, template_name='authentication/act
 
 
 def password_reset(request,
-                   template_name='authenticate/password_reset_form.html',
-                   template_mail_password_reset='authenticate/password_reset_email.html',
-                   template_mail_subject='authenticate/password_reset_subject.txt',
+                   template_name='authentication/password_reset_form.html',
+                   template_mail_password_reset='authentication/mails/password_reset_email.html',
                    password_reset_form=PasswordResetForm,
                    token_generator=default_token_generator,
                    post_reset_redirect=None,
-                   from_email=None,
                    extra_context=None,
-                   html_email_template_name=None,
                    extra_email_context=None):
 
     if post_reset_redirect is None:
-        post_reset_redirect = reverse('password_reset_done')
+        post_reset_redirect = reverse('authentication:password_reset_done')
     else:
         post_reset_redirect = resolve_url(post_reset_redirect)
+
     if request.method == "POST":
         form = password_reset_form(request.POST)
         if form.is_valid():
-            opts = {
-                'use_https': request.is_secure(),
-                'token_generator': token_generator,
-                'from_email': from_email,
-                'email_template_name': template_mail_password_reset,
-                'subject_template_name': template_mail_subject,
-                'request': request,
-                'html_email_template_name': html_email_template_name,
-                'extra_email_context': extra_email_context,
+            params = {
+                'uidb64': urlsafe_base64_encode(force_bytes(form.get_user().pk)),
+                'token': token_generator.make_token(form.get_user())
             }
-            form.save(**opts)
+            email_context = {
+                'password_reset_confirm_url': build_absolute_uri(
+                    reverse('authentication:password_reset_confirm', kwargs=params)
+                )
+            }
+            if extra_email_context:
+                email_context.update(email_context)
+
+            EmailSender(template_mail_password_reset).render(email_context).send(to=form.get_user().email)
             return HttpResponseRedirect(post_reset_redirect)
+        else:
+            status = 400
     else:
+        status = 200
         form = password_reset_form()
     context = {
         'form': form,
@@ -241,11 +244,11 @@ def password_reset(request,
     if extra_context is not None:
         context.update(extra_context)
 
-    return TemplateResponse(request, template_name, context)
+    return TemplateResponse(request, template_name, context, status=status)
 
 
 def password_reset_done(request,
-                        template_name='authenticate/password_reset_done.html',
+                        template_name='authentication/password_reset_done.html',
                         extra_context=None):
     context = {
         'title': _('Password reset sent'),
@@ -258,7 +261,7 @@ def password_reset_done(request,
 
 # @never_cache
 def password_reset_confirm(request, uidb64=None, token=None,
-                           template_name='authenticate/password_reset_confirm.html',
+                           template_name='authentication/password_reset_confirm.html',
                            token_generator=default_token_generator,
                            set_password_form=SetPasswordForm,
                            post_reset_redirect=None,
@@ -267,9 +270,10 @@ def password_reset_confirm(request, uidb64=None, token=None,
     UserModel = get_user_model()
     assert uidb64 is not None and token is not None  # checked by URLconf
     if post_reset_redirect is None:
-        post_reset_redirect = reverse('password_reset_complete')
+        post_reset_redirect = reverse('authentication:password_reset_complete')
     else:
         post_reset_redirect = resolve_url(post_reset_redirect)
+
     try:
         # urlsafe_base64_decode() decodes to bytestring on Python 3
         uid = force_text(urlsafe_base64_decode(uidb64))
@@ -285,9 +289,13 @@ def password_reset_confirm(request, uidb64=None, token=None,
             if form.is_valid():
                 form.save()
                 return HttpResponseRedirect(post_reset_redirect)
+            else:
+                status = 400
         else:
+            status = 200
             form = set_password_form(user)
     else:
+        status = 400
         validlink = False
         form = None
         title = _('Password reset unsuccessful')
@@ -299,11 +307,11 @@ def password_reset_confirm(request, uidb64=None, token=None,
     if extra_context is not None:
         context.update(extra_context)
 
-    return TemplateResponse(request, template_name, context)
+    return TemplateResponse(request, template_name, context, status=status)
 
 
 def password_reset_complete(request,
-                            template_name='authenticate/password_reset_complete.html',
+                            template_name='authentication/password_reset_complete.html',
                             extra_context=None):
     context = {
         'login_url': resolve_url(settings.LOGIN_URL),
@@ -318,7 +326,7 @@ def password_reset_complete(request,
 @csrf_protect
 @login_required
 def password_change(request,
-                    template_name='authenticate/password_change_form.html',
+                    template_name='authentication/password_change_form.html',
                     post_change_redirect=None,
                     password_change_form=PasswordChangeForm,
                     extra_context=None):

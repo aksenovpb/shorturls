@@ -13,6 +13,10 @@ class AuthenticationUrlsTestCase(TestCase):
     def test_authentication_urls__logout(self):
         self.assertEqual(reverse('authentication:logout'), '/auth/logout/')
 
+    def test_authentication_urls__activate(self):
+        args = ('uidb64', 'tokenpart1-tokenpart2')
+        self.assertEqual(reverse('authentication:activate', args=args), '/auth/activate/uidb64/tokenpart1-tokenpart2/')
+
     def test_authentication_urls__password_reset(self):
         self.assertEqual(reverse('authentication:password_reset'), '/auth/password_reset/')
 
