@@ -37,10 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'bootstrap3',
 
     'project',
+    'helper',
     'shorturls',
     'authentication',
     'accounts',
@@ -124,14 +126,17 @@ USE_L10N = True
 USE_TZ = True
 
 
+SITE_ID = 1
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
 
 
-EMAIL_HOST = ''
+EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = 'startprogru@yandex.ru'
+EMAIL_HOST_PASSWORD = 'Aa12wXya'
 EMAIL_USE_SSL = True

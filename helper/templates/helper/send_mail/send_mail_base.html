@@ -1,0 +1,57 @@
+[SUBJECT]
+{% block subject %}{% endblock %}
+
+[CONTENT]
+{% block text_message %}{% endblock %}
+
+Данное письмо отправлено автоматически и не требует ответа. Если у Вас появятся вопросы — обращайтесь в службу поддержки по адресу {{ support_url }}
+
+*****
+Это письмо отправленно автоматически и не требует ответа.
+Если вы не хотите получать оповещения, отпишитесь {{ unsubscribe_url }}
+
+[HTML]
+<table width="100%" bgcolor="#fff" border="0" cellpadding="0" cellspacing="0" style="margin:0; padding:0" align="center">
+    <tbody><tr>
+        <td>
+
+            <table style="border: 1px solid #cfcece; max-width: 600px; width:100%" align="center" cellpadding="0" cellspacing="15" bgcolor="ffffff">
+                <tbody>
+                    <tr>
+                        <td align="left">
+                            <table style="margin:0; padding:0; max-width:600px; width:100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                <tr><td align="center">
+                                    <a style="max-width: 600px; width:100%" href="{{ site_url }}" target="_blank">
+                                        Go to {{ site_url }}
+                                    </a>
+                                </td>
+                                </tr><tr>
+                                    <td>
+                                        <table id="content-5" cellpadding="0" border="0" cellspacing="0" align="left" style="margin-top:30px;  padding:0; max-width: 600px; width:100%">
+                                            <tbody><tr>
+                                                <td style="max-width: 600px; width:100%" valign="top">
+                                                    {% block html_message %}{% endblock %}
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                            <table style="color:#908e8e !important; font-size: 14px; line-height: 1.5;  font-family: Arial, sans-serif; padding:0; max-width: 600px; width:100% " cellpadding="0" cellspacing="0" align="center">
+                                <tbody><tr>
+                                    <td align="center">
+                                        <p style="margin: 0; padding: 0; background:none;">Данное письмо отправлено автоматически и не требует ответа. Если у Вас появятся вопросы — обращайтесь в службу поддержки по адресу {{ support_url }}</p>
+                                        <p style="margin: 0; padding: 0; background:none;">Это письмо отправленно автоматически и не требует ответа.</p>
+                                        <p style="margin: 0; padding: 0; background:none;">Если вы не хотите получать оповещения, отпишитесь<a href="{{ unsubscribe_url }}" style="text-decoration:none; color:#797979; font-weight:bold;"> здесь.</a></p>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </td>
+    </tr>
+</tbody></table>

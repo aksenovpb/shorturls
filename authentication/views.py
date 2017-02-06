@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME, update_session_auth_hash
-from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -14,16 +14,16 @@ from django.template.response import TemplateResponse
 from django.utils.encoding import force_bytes
 from django.utils.encoding import force_text
 from django.utils.http import is_safe_url
-from django.utils.http import urlsafe_base64_encode
 from django.utils.http import urlsafe_base64_decode
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_protect
 
-from authentication.forms import RegistrationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from authentication.forms import AuthenticationForm
-from authentication.send_mail import send_mail
+from authentication.forms import RegistrationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from authentication.tokens import user_is_active_token_generator
-
+from helper.function import build_absolute_uri
+from helper.send_mail import EmailSender
 
 USER_IS_ACTIVE = getattr(settings, 'AUTHENTICATION_USER_IS_ACTIVE', True)
 LOGIN_BEFORE_REG = getattr(settings, 'AUTHENTICATION_LOGIN_BEFORE_REG', True)
@@ -32,7 +32,6 @@ REDIRECT_BEFORE_REG = getattr(settings, 'AUTHENTICATION_REDIRECT_BEFORE_REG', '/
 
 def signup(request,
            template_name='authentication/registration.html',
-           template_mail_subject='authentication/mails/registration_subject.txt',
            template_mail_user_is_activate='authentication/mails/registration_user_is_active.html',
            template_mail_user_not_is_activate='authentication/mails/registration_user_not_is_active.html',
            registration_form=RegistrationForm,
@@ -52,8 +51,7 @@ def signup(request,
                 form.cleaned_data.get('password1')
             )
 
-            recipient_list = [user.email]
-            context = {'user': user, 'host': request.get_host()}
+            email_context = {'user': user, 'host': request.get_host()}
 
             if USER_IS_ACTIVE:
                 template_message = template_mail_user_is_activate
@@ -68,32 +66,19 @@ def signup(request,
                 user.is_active = False
                 user.save()
 
-                current_site = get_current_site(request)
-                site_name = current_site.name
-                domain = current_site.domail
-
-                use_https = request.is_secure()
                 token_generator = user_is_active_token_generator
 
-                context.update(
+                email_context.update(
                     {
-                        'domain': domain,
-                        'site_name': site_name,
                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                         'user': user,
                         'token': token_generator.make_token(user),
-                        'protocol': 'https' if use_https else 'http'
                     }
                 )
 
                 template_message = template_mail_user_not_is_activate
 
-            send_mail(
-                subject_template_name=template_mail_subject,
-                email_template_name=template_message,
-                context=context,
-                to_email=recipient_list
-            )
+            EmailSender(template_message).render(email_context).send(to=user.email)
 
             if not is_safe_url(url=redirect_to, host=request.get_host()):
                 redirect_to = REDIRECT_BEFORE_REG
