@@ -66,13 +66,11 @@ def signup(request,
                 user.is_active = False
                 user.save()
 
-                token_generator = user_is_active_token_generator
-
                 email_context.update(
                     {
                         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
                         'user': user,
-                        'token': token_generator.make_token(user),
+                        'token': user_is_active_token_generator.make_token(user),
                     }
                 )
 
@@ -115,7 +113,6 @@ def login(request,
         if form.is_valid():
             if not is_safe_url(url=redirect_to, host=request.get_host()):
                 redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
-                redirect_to = '/'
             auth_login(request, form.get_user())
 
             return HttpResponseRedirect(redirect_to)
@@ -171,6 +168,37 @@ def logout(request,
         context.update(extra_context)
 
     return TemplateResponse(request, template_name, context)
+
+
+def activate(request, uidb64=None, token=None, template_name='authentication/activate.html', extra_context=None):
+    UserModel = get_user_model()
+    assert uidb64 is not None and token is not None  # checked by URLconf
+
+    try:
+        # urlsafe_base64_decode() decodes to bytestring on Python 3
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = UserModel._default_manager.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
+        user = None
+
+    if user is not None and user_is_active_token_generator.check_token(user, token):
+        validlink = True
+        title = 'User activated'
+        user.is_activate = True
+        user.save()
+        status = 200
+    else:
+        validlink = False
+        title = 'User not found'
+        status = 400
+    context = {
+        'title': title,
+        'validlink': validlink,
+    }
+    if extra_context is not None:
+        context.update(extra_context)
+
+    return TemplateResponse(request, template_name, context, status=status)
 
 
 def password_reset(request,

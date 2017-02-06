@@ -140,3 +140,6 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = 'startprogru@yandex.ru'
 EMAIL_HOST_PASSWORD = 'Aa12wXya'
 EMAIL_USE_SSL = True
+
+
+LOGIN_REDIRECT_URL = '/auth/login/'
