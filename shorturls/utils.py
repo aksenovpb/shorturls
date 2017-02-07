@@ -1,10 +1,10 @@
-from django.test import TestCase
 from django.utils.crypto import get_random_string
 from django.conf import settings
 
 
 SHORTCODE_MIN = getattr(settings, 'SHORTCODE_MIN', 6) 
 COUNT_ITERATION_MAX = getattr(settings, 'COUNT_ITERATION_MAX', 3)
+
 
 def create_shortcode(instance, size=SHORTCODE_MIN, iteration=1):
     new_code = get_random_string(length=size)

@@ -4,9 +4,9 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 
-# Create your models here.
+
 class AccountManager(BaseUserManager):
-    def create_user(self, username, email, password=None, **kwargs):
+    def _create_user(self, username, email, password=None, **kwargs):
         if not email:
             raise ValueError('Users must have a valid email address')
 
@@ -15,19 +15,19 @@ class AccountManager(BaseUserManager):
 
         account = self.model(email=self.normalize_email(email),
                              username=username)
-
         account.set_password(password)
         account.save(using=self._db)
-
         return account
+
+    def create_user(self, username, email, password=None, **kwargs):
+        extra = {'is_superuser': False, 'is_staff': False}
+        kwargs.update(extra)
+        return self._create_user(username, email, password, **kwargs)
 
     def create_superuser(self, username, email, password, **kwargs):
-        account = self.create_user(username, email, password, **kwargs)
-
-        account.is_superuser = True
-        account.save()
-
-        return account
+        extra = {'is_superuser': True, 'is_staff': True}
+        kwargs.update(extra)
+        return self._create_user(username, email, password, **kwargs)
 
 
 class Account(AbstractUser):

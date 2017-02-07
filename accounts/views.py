@@ -4,7 +4,6 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.urls import reverse
 
-from authentication.forms import PasswordChangeForm
 from shorturls.forms import UrlFullForm, UrlChangeForm
 from shorturls.models import Url
 

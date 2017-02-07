@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from shorturls.views import index
 from shorturls.models import Url, Referrer, Logging
 
 

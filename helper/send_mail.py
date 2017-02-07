@@ -2,9 +2,8 @@ import re
 
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
-from django.template import Template, Context
 from django.core.mail import send_mail as django_send_email
-from django.template.loader import get_template, render_to_string
+from django.template.loader import render_to_string
 from django.utils import six
 
 from helper.function import build_absolute_uri
